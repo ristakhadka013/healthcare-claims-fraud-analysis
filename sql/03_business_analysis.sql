@@ -53,6 +53,7 @@ This suggest that fraudulent healthcare providers may submit higher-value claims
 
 -- Analysis Question2. Do fraudulent providers treated more inpatient than non-fraudulent providers?
 
+--FIRST APPROACH
 select
 p.PotentialFraud,
 count(ip.ClaimID) as TotalInpatient,
@@ -62,6 +63,24 @@ from inpatient ip
 join provider p
 on ip.Provider = p.Provider
 group by p.PotentialFraud;
+
+--SECOND APPROACH
+With TotalClaims as (
+	SELECT
+	p.PotentialFraud,
+	ip.Provider,
+	COUNT(ip.ClaimID) as TOTALCLAIM
+	FROM Inpatient ip
+	JOIN provider p
+	ON ip.Provider = p.Provider
+	GROUP BY Provider, PotentialFraud
+)
+
+SELECT 
+	PotentialFraud,
+	AVG(TOTALCLAIM) as AVGTOTALCLAIM
+	FROM TotalClaims
+	GROUP BY PotentialFraud;
 
 /* --------------------------------------------------------------------------------------------------------------
 
