@@ -74,7 +74,7 @@ The fraudulent healthcare providers treats more inpatient (53.19) in average tha
 
 ----------------------------------------------------------------------------------------------------------------------------*/
 
--- Anlysis Question 3 : Do fraudulent Provider treat patient with more chronic condition? 
+-- Analysis Question 3 : Do fraudulent Provider treat patient with more chronic condition? 
 
 WITH ChronicPerBene AS (
 	SELECT 
@@ -121,9 +121,99 @@ Yes	5.3933
 No	5.4398
 
 FINDINGS 
-The potential fraudulent healthcare provider treated lower average no of chronic condition (5.3933) 
+The potential fraudulent healthcare provider treated lower average number of chronic conditions (5.3933) 
 than non-fraudulent healthcare providers (5.4398).
 Unlike Claim amount and inpatient volumn, patient chronic condition doesnot appear to meaningfully distinguish fraudulent
 from non-fraudulent providers- suggesting fraud risk may be closely tied to billing rather than patient case complexity 
 
 ------------------------------------------------------------------------------------------------------------------------*/
+
+-- Analysis Question 4. Do fraudulent provider treat more older patient ? 
+
+with TotalClaims as ( 
+	select 
+    ip.BeneID,
+	p.PotentialFraud,
+	ip.Provider,
+    ip.ClaimStartDt
+	from provider p 
+	join inpatient ip
+	on p.Provider = ip.Provider
+
+	union
+	
+	select 
+    op.BeneID,
+	p.PotentialFraud,
+	op.Provider,
+    op.ClaimStartDt
+	from provider p 
+	join outpatient op
+	on p.Provider = op.Provider
+)
+
+SELECT
+    tc.PotentialFraud,
+    AVG(TIMESTAMPDIFF(YEAR, b.DOB, tc.ClaimStartDt)) AS AverageAge
+FROM TotalClaims tc
+JOIN beneficiary b
+    ON tc.BeneID = b.BeneID
+GROUP BY tc.PotentialFraud;
+
+/* ---------------------------------------------------------------------------------
+RESULT 
+Yes	72.9328
+No	72.7160
+
+FINDINGS 
+Fraudulent healthcare providers patients have a nearly identical average age (72.93) 
+compared to non-fraudulent providers patients (72.72).
+patient age does not meaningfully distinguish fraud from non-fraud providers.
+------------------------------------------------------------------------------------------ */
+
+-- Analysis Question 5. Do fraudulent providers have a higher number of claims?
+
+with InpatientOutpatientClaim as ( 
+	select 
+	p.PotentialFraud,
+	ip.Provider,
+    ip.ClaimID
+	from provider p 
+	join inpatient ip
+	on p.Provider = ip.Provider
+
+	union
+	
+	select 
+	p.PotentialFraud,
+	op.Provider, 
+    op.ClaimID
+	from provider p 
+	join outpatient op
+	on p.Provider = op.Provider
+    ),
+
+TotalClaims as (
+SELECT 
+Provider,
+PotentialFraud,
+COUNT(ClaimID) as TOTALClaims
+FROM InpatientOutpatientClaim 
+GROUP BY Provider, PotentialFraud)
+
+SELECT 
+PotentialFraud,
+ROUND(AVG(TOTALClaims), 2) as AVG_TOTALClaims
+FROM TotalClaims
+GROUP BY PotentialFraud;
+
+/* ---------------------------------------------------------------------------------
+RESULT
+No	70.44
+Yes	420.55
+
+FINDINGS:
+The Fraudulent healthcare provider submitted more claims (420.55) than non-fraudulent health provider (70.44)
+This is the largest gap observed so far and suggest that unusually high claim volume is strongly 
+associated with fraud risk
+------------------------------------------------------------------------------------------------*/
