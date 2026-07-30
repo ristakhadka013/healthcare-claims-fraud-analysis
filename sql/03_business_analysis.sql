@@ -18,6 +18,7 @@ LIMIT 10 ;
 -- Analysis Question 1 : Do Fraudulent Provider have higher average claim amount?
 with TotalClaims as ( 
 	select 
+    p.Provider,
 	p.PotentialFraud,
 	ip.InscClaimAmtReimbursed as InscClaimAmtReimbursed
 	from provider p 
@@ -27,27 +28,37 @@ with TotalClaims as (
 	union all
 	
 	select 
+    p.Provider,
 	p.PotentialFraud,
 	op.InscClaimAmtReimbursed
 	from provider p 
 	join outpatient op
 	on p.Provider = op.Provider
-    )
+    ),
+    
+ProviderAvg as (
+	select 
+    Provider,
+	PotentialFraud,
+	round(avg(InscClaimAmtReimbursed), 2) as ProviderAvgClaim
+	from TotalClaims
+	group by Provider, PotentialFraud
+)
 
-select 
-PotentialFraud,
-round(avg(InscClaimAmtReimbursed), 2) as AVGTotalInscClaimAmtReimbursed
-from TotalClaims
+Select 
+	PotentialFraud,
+	round(avg(ProviderAvgClaim), 2) as AvgClaimAmount
+FROM ProviderAvg
 group by PotentialFraud;
 
 /*----------------------------------------------------------------------....................................
 RESULT------------ 
-No -> avg 755.21
-Yes -> avg 1389.51
+No -> avg 1523.78
+Yes -> avg 3842.80
 
 FINDINGS ----------------------------------
-The fraudulent healthcare provider received higher average Reimbursement per claim (1389.51) 
-than non-fraudulent healthcare provider (755.21)
+The fraudulent healthcare provider received higher average Reimbursement per provider (3842.80) 
+than non-fraudulent healthcare provider (1523.78)
 This suggest that fraudulent healthcare providers may submit higher-value claims than non-fraudulent providers.
 ----------------------------------------------------------------------------------------------------------------*/
 
