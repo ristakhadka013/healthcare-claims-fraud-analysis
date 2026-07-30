@@ -51,7 +51,7 @@ than non-fraudulent healthcare provider (755.21)
 This suggest that fraudulent healthcare providers may submit higher-value claims than non-fraudulent providers.
 ----------------------------------------------------------------------------------------------------------------*/
 
--- Analysis Question2. Do fraudulent providers treated more inpatient than non-fraudulent providers?
+-- Analysis Question2. Do fraudulent providers treated more inpatient claims per provider?
 
 --FIRST APPROACH
 select
@@ -89,7 +89,7 @@ No	17072	1652	10.33
 Yes	23402	440		53.19
 
 FINDINGS------------
-The fraudulent healthcare providers treats more inpatient (53.19) in average than non-fraudulent healthcare providers (10.33).
+The fraudulent healthcare providers submitted more inpatient (53.19) in average than non-fraudulent healthcare providers (10.33).
 
 ----------------------------------------------------------------------------------------------------------------------------*/
 
@@ -185,7 +185,7 @@ Yes	72.9328
 No	72.7160
 
 FINDINGS 
-Fraudulent healthcare providers patients have a nearly identical average age (72.93) 
+Patients of fraudulent healthcare providers have a nearly identical average age (72.93) 
 compared to non-fraudulent providers patients (72.72).
 patient age does not meaningfully distinguish fraud from non-fraud providers.
 ------------------------------------------------------------------------------------------ */
