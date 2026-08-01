@@ -17,3 +17,5 @@ DataSet : (https://www.kaggle.com/datasets/rohitrox/healthcare-provider-fraud-de
   2. Validate in Excel
   3. Visualize in Power BI
 
+## Dashboard 
+![Fraud Analysis Dashboard](https://github.com/ristakhadka013/healthcare-claims-fraud-analysis/blob/main/powerbi/Dashboard.png)
