@@ -15,7 +15,7 @@ SELECT *
 FROM outpatient
 LIMIT 10 ;
 
--- Analysis Question 1 : Do Fraudulent Provider have higher average claim amount?
+-- Analysis Question 1 : Do Fraudulent Provider have higher average claim amount per provider?
 with TotalClaims as ( 
 	select 
     p.Provider,
